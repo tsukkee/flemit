@@ -1,8 +1,8 @@
 package org.flemit.reflection
 {
+	import flash.net.*;
 	import flash.system.*;
 	import flash.utils.*;
-	import flash.net.*;
 	
 	import org.flemit.bytecode.BCNamespace;
 	import org.flemit.bytecode.Multiname;
@@ -449,7 +449,11 @@ package org.flemit.reflection
 			{
 			}
 			
-			if (cls == null)
+			// Vector.<T>.constructor returns Vector.<*>, which causes problems
+			var isGenericVector : Boolean = (cls != null) &&
+				(getQualifiedClassName(cls) == GENERIC_VECTOR_NAME);
+			
+			if (cls == null || isGenericVector)
 			{
 				cls = getDefinitionByName(getQualifiedClassName(obj)) as Class;
 			}
@@ -458,6 +462,8 @@ package org.flemit.reflection
 		}
 		
 		private static var _typeProvider : ITypeProvider = new DescribeTypeTypeProvider();
+		
+		private static const GENERIC_VECTOR_NAME : String = "__AS3__.vec::Vector.<*>";
 		
 		private static var _star : Type = createStar();
 		public static function get star() : Type { return _star; }
