@@ -52,7 +52,7 @@ package org.flemit.reflection
 			
 			_class = classDefinition;
 			
-			var typeNamespaceKind : uint = (_qname.ns.kind == NamespaceKind.PACKAGE_NAMESPACE)
+			var typeNamespaceKind : uint = (_qname.ns.name == "")
 				? NamespaceKind.NAMESPACE
 				: NamespaceKind.PROTECTED_NAMESPACE;	
 			
@@ -146,11 +146,6 @@ package org.flemit.reflection
 		public function get typeNamespace() : BCNamespace
 		{
 			return _typeNamespace;
-		}
-		
-		internal function setTypeNamespace(value : BCNamespace) : void
-		{
-			_typeNamespace = value;
 		}
 		
 		public function getInterfaces() : Array
