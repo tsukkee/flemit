@@ -36,8 +36,11 @@ package org.flemit.bytecode
 			var sepChar : String = (nsString.indexOf(':') == -1)
 				? ':'
 				: '/';
-				
+			
 			return nsString.concat(sepChar, name);
+			/*return nsString == ""
+				? name
+				: nsString.concat(sepChar, name);*/
 		}
 	}
 }

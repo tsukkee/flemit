@@ -191,7 +191,7 @@ package org.flemit.reflection
 			{
 				declaredBy = methodNode.@declaredBy.toString().replace('::',':');
 				
-				if (declaredBy == owner.fullName)
+				if (declaredBy == owner.fullName || ":" + declaredBy == owner.fullName)
 				{
 					try
 					{
