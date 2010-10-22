@@ -1,11 +1,11 @@
 package org.flemit.bytecode
 {
+	import flash.utils.Dictionary;
+	
 	import org.flemit.reflection.FieldInfo;
 	import org.flemit.reflection.MethodInfo;
 	import org.flemit.reflection.PropertyInfo;
 	import org.flemit.reflection.Type;
-	
-	import flash.utils.Dictionary;
 		
 	public class DynamicClass extends Type
 	{
@@ -27,6 +27,11 @@ package org.flemit.bytecode
 			this.methodBodies[method] = methodBody;
 		}
 		
+		public function getMethodBody(method : MethodInfo) : DynamicMethod
+		{
+			return methodBodies[method] as DynamicMethod;
+		}
+		
 		public function addMethod(method : MethodInfo) : void
 		{
 			_methods.push(method);
@@ -45,6 +50,30 @@ package org.flemit.bytecode
 		public function set constructor(value : MethodInfo) : void
 		{
 			_constructor = value;
+		}
+		
+		public static function fromType(type : Type) : DynamicClass
+		{
+			var cls : DynamicClass = new DynamicClass(type.qname, type.baseType, type.getInterfaces());
+			
+			for each(var method : MethodInfo in type.getMethods(true, true))
+			{
+				cls.addMethod(method);
+			}
+			
+			for each(var property : PropertyInfo in type.getProperties(true, true))
+			{
+				cls.addProperty(property);
+			}
+			
+			for each(var field : FieldInfo in type.getFields(true, true))
+			{
+				cls.addSlot(field);
+			}
+			
+			cls._isInterface = type.isInterface;
+			
+			return cls; 
 		}
 
 	}

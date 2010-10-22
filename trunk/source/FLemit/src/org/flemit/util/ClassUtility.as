@@ -26,6 +26,7 @@ package org.flemit.util
 				classString = getQualifiedClassName(cls);
 				
 			classString = classString.replace('::','.');
+			classString = classString.replace(':','.');
 				
 			
 			var packageParts : Array = packageString.split('.');
