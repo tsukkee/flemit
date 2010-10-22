@@ -1,10 +1,10 @@
 package org.flemit.bytecode
 {
+	import flash.utils.Dictionary;
+	
 	import org.flemit.reflection.MethodInfo;
 	import org.flemit.reflection.Type;
 	import org.flemit.util.ClassUtility;
-	
-	import flash.utils.Dictionary;
 	
 	
 	public class ByteCodeLayoutBuilder implements IByteCodeLayoutBuilder
@@ -63,14 +63,17 @@ package org.flemit.bytecode
 				}
 				else
 				{
+					if (dynamicClass.getMethodBody(dynamicClass.scriptInitialiser) == null)
+					{
+						dynamicClass.addMethodBody(dynamicClass.scriptInitialiser,
+							generateScriptInitialier(dynamicClass));
+					}
+					
 					layout.registerClass(type);
 					
-					//if (dynamicClass != null)
+					for each (var methodBody : DynamicMethod in dynamicClass.methodBodies)
 					{
-						for each (var methodBody : DynamicMethod in dynamicClass.methodBodies)
-						{
-							layout.registerMethodBody(methodBody.method, methodBody);
-						}
+						layout.registerMethodBody(methodBody.method, methodBody);
 					}
 				}
 			}
@@ -102,6 +105,45 @@ package org.flemit.bytecode
 			array.push(value);
 			
 			return array.length - 1;
+		}
+		
+		private function generateScriptInitialier(dynamicClass : Type) : DynamicMethod
+		{
+			var clsNamespaceSet : NamespaceSet = new NamespaceSet(
+				[new BCNamespace(dynamicClass.packageName, NamespaceKind.PACKAGE_NAMESPACE)]);
+			
+			with (Instructions)
+			{
+				if (dynamicClass.isInterface)
+				{
+					return new DynamicMethod(dynamicClass.scriptInitialiser, 3, 2, 1, 3, [
+						[GetLocal_0],
+						[PushScope],
+						[FindPropertyStrict, new MultipleNamespaceName(dynamicClass.name, clsNamespaceSet)], 
+						[PushNull],
+						[NewClass, dynamicClass],
+						[InitProperty, dynamicClass.qname],
+						[ReturnVoid]
+					]); 
+				}
+				else
+				{
+					// TODO: Support where base class is not Object
+					return new DynamicMethod(dynamicClass.scriptInitialiser, 3, 2, 1, 3, [
+						[GetLocal_0],
+						[PushScope],
+						//[GetScopeObject, 0],
+						[FindPropertyStrict, dynamicClass.multiNamespaceName], 
+						[GetLex, dynamicClass.baseType.qname],
+						[PushScope],
+						[GetLex, dynamicClass.baseType.qname],
+						[NewClass, dynamicClass],
+						[PopScope],
+						[InitProperty, dynamicClass.qname],
+						[ReturnVoid]
+					]);
+				}
+			}
 		}
 	}
 }

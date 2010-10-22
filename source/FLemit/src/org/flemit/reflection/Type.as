@@ -17,7 +17,7 @@ package org.flemit.reflection
 		
 		private var _isDynamic : Boolean = false;		
 		private var _isFinal : Boolean = false;		
-		private var _isInterface : Boolean = false;		
+		protected var _isInterface : Boolean = false;		
 		
 		protected var _baseClass : Type;
 		public var _interfaces : Array;
