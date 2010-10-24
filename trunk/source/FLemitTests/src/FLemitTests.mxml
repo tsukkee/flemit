@@ -5,6 +5,8 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import org.flexunit.internals.TraceListener;
+			import org.flexunit.listeners.CIListener;
 			import org.flemit.tests.FLemitTestSuite;
 			import org.flemit.tests.ReflectionTestSuite;
 			import flexunit.framework.Reflective;
@@ -19,11 +21,31 @@
 
 				core = new FlexUnitCore();
 
-				//Listener for the UI, optional
-				core.addListener( new UIListener( uiListener ));
-				//core.addListener( new XMLListener() );
+				addTestListeners(core);
 				
 				core.run( ReflectionTestSuite, FLemitTestSuite );
+			}
+			
+			private function addTestListeners(core : FlexUnitCore) : void
+			{
+				CONFIG::AUTOMATED
+				{
+					addAutomatedTestListeners(core);
+					//return;
+				}
+				
+				addUITestListeners(core);
+			}
+			
+			private function addAutomatedTestListeners(core : FlexUnitCore) : void
+			{
+				core.addListener(new CIListener());
+				core.addListener(new TraceListener());
+			}
+			
+			private function addUITestListeners(core : FlexUnitCore) : void
+			{
+				core.addListener(new UIListener(uiListener));
 			}
 		]]>
 	</mx:Script>
